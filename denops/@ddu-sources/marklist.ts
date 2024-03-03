@@ -29,7 +29,7 @@ export class Source extends BaseSource<Params> {
               bufNr: mark.pos[0],
               col: mark.pos[2],
               lineNr: mark.pos[1],
-              path: mark.file,
+              path: path,
             },
             highlights: [
               {
