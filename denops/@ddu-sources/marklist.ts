@@ -5,6 +5,7 @@ import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.7.1/file.ts";
 
 export type Params = {
   buf?: fn.BufNameArg;
+  hl_group: string;
 };
 
 export class Source extends BaseSource<Params> {
@@ -30,6 +31,14 @@ export class Source extends BaseSource<Params> {
               lineNr: mark.pos[1],
               path: mark.file,
             },
+            highlights: [
+              {
+                name: "ddu-source-marklist-header",
+                hl_group: args.sourceParams.hl_group,
+                col: 1,
+                width: mark.mark.length,
+              },
+            ],
           });
         }
         controller.enqueue(items);
@@ -38,6 +47,8 @@ export class Source extends BaseSource<Params> {
     });
   }
   override params(): Params {
-    return {};
+    return {
+      hl_group: "Special",
+    };
   }
 }
