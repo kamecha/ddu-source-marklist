@@ -26,16 +26,15 @@ export class Source extends BaseSource<Params> {
           // if bufnum is 0, we use path only.
           // in setpos({expr}, {list}), if bufnum is 0, it means the current buffer
           // in getpos({expr}), if bufnum is 0, it means there is no buffer related to the position
-          const action: ActionData = {
-            bufNr: mark.pos[0] === 0 ? -1 : mark.pos[0],
-            col: mark.pos[2],
-            lineNr: mark.pos[1],
-            path: path,
-          };
           items.push({
             word: mark.mark + " " + path + ":" + mark.pos[1] + ":" +
               mark.pos[2],
-            action: action,
+            action: {
+              bufNr: mark.pos[0] === 0 ? -1 : mark.pos[0],
+              col: mark.pos[2],
+              lineNr: mark.pos[1],
+              path: path,
+            },
             highlights: [
               {
                 name: "ddu-source-marklist-header",
