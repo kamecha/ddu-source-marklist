@@ -22,18 +22,16 @@ export class Source extends BaseSource<Params> {
         );
         for (const mark of marklist) {
           const path = mark.file ?? await fn.bufname(args.denops, mark.pos[0]);
-          const action: ActionData = {
-            col: mark.pos[2],
-            lineNr: mark.pos[1],
-            path: path,
-          };
           // ddu-kind-file 0 is special.
           // if bufnum is 0, we use path only.
           // in setpos({expr}, {list}), if bufnum is 0, it means the current buffer
           // in getpos({expr}), if bufnum is 0, it means there is no buffer related to the position
-          if (mark.pos[0] !== 0) {
-            action.bufNr = mark.pos[0];
-          }
+          const action: ActionData = {
+            bufNr: mark.pos[0] === 0 ? -1 : mark.pos[0],
+            col: mark.pos[2],
+            lineNr: mark.pos[1],
+            path: path,
+          };
           items.push({
             word: mark.mark + " " + path + ":" + mark.pos[1] + ":" +
               mark.pos[2],
