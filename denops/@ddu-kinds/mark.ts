@@ -5,6 +5,7 @@ import {
 import { Denops, fn } from "https://deno.land/x/ddu_vim@v3.10.2/deps.ts";
 import {
   ActionFlags,
+  BufferPreviewer,
   DduItem,
   Previewer,
 } from "https://deno.land/x/ddu_vim@v3.10.2/types.ts";
@@ -82,8 +83,18 @@ export class Kind extends BaseKind<Params> {
     return {};
   }
   override getPreviewer(
-    {}: GetPreviewerArguments,
+    args: GetPreviewerArguments,
   ): Promise<Previewer | undefined> {
-    return Promise.resolve(undefined);
+    const action = args.item.action as ActionData;
+    if (!action) {
+      return Promise.resolve(undefined);
+    }
+    const previewer: BufferPreviewer = {
+      kind: "buffer",
+      expr: action.bufNr === -1 ? undefined : action.bufNr,
+      path: action.path,
+      lineNr: action.lineNr,
+    };
+    return Promise.resolve(previewer);
   }
 }
