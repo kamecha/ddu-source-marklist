@@ -53,6 +53,10 @@ export class Source extends BaseSource<Params> {
       }
       return ActionFlags.None;
     },
+    // 該当するバッファと紐づくウィンドウへ移動して、カーソルを移動する
+    // 該当ウィンドウが複数ある場合はpushして、ウィンドウソースっぽくしてもよいかも
+    // ウィンドウに移動した後に、jumpと同じ要領で移動する
+    goto: (): ActionFlags => ActionFlags.None,
     delete: async (
       args: { denops: Denops; items: DduItem[] },
     ): Promise<ActionFlags> => {
