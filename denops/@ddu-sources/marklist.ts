@@ -4,6 +4,7 @@ import { BaseSource, Item } from "https://deno.land/x/ddu_vim@v3.10.2/types.ts";
 import { ActionData } from "../@ddu-kinds/mark.ts";
 
 export type Params = {
+  winid?: number;
   buf?: fn.BufNameArg;
   hl_group: string;
 };
@@ -30,6 +31,7 @@ export class Source extends BaseSource<Params> {
             word: mark.mark + " " + path + ":" + mark.pos[1] + ":" +
               mark.pos[2],
             action: {
+              winid: args.sourceParams.winid,
               bufNr: mark.pos[0] === 0 ? -1 : mark.pos[0],
               col: mark.pos[2],
               lineNr: mark.pos[1],
