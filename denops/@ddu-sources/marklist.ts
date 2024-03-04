@@ -15,6 +15,18 @@ export type Params = {
 export class Source extends BaseSource<Params> {
   override kind = "file";
   override actions = {
+    // 通常の'aのようなjumpを行う
+    jump: async (
+      args: { denops: Denops; items: DduItem[] },
+    ): Promise<ActionFlags> => {
+      for (const item of args.items) {
+        const mark = item.data as fn.MarkInformation;
+        // TODO: setpos(), cursor(), normal!のどれがいいのか調査しとく
+        // await fn.setpos(args.denops, ".", mark.pos);
+        await args.denops.cmd("normal! " + mark.mark);
+      }
+      return ActionFlags.None;
+    },
     delete: async (
       args: { denops: Denops; items: DduItem[] },
     ): Promise<ActionFlags> => {
