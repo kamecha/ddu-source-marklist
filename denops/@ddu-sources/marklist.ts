@@ -15,6 +15,32 @@ export type Params = {
 export class Source extends BaseSource<Params> {
   override kind = "file";
   override actions = {
+    // ddu-kind-fileでのopenと同じような挙動をする
+    open: async (
+      args: { denops: Denops; actionParams: unknown; items: DduItem[] },
+    ): Promise<ActionFlags> => {
+      const params = args.actionParams as { command: string };
+      const openCommand = params.command ?? "edit";
+      for (const item of args.items) {
+        const action = item.action as ActionData;
+        const bufNr = action.bufNr ?? -1;
+        const mark = item.data as fn.MarkInformation;
+        // open the buffer
+        if (bufNr > 0) {
+          const isLoaded = await fn.bufloaded(args.denops, bufNr);
+          if (!isLoaded) {
+            await fn.bufload(args.denops, bufNr);
+          }
+          await args.denops.cmd(openCommand);
+          await args.denops.cmd(`buffer ${bufNr}`);
+        } else if (action.path) {
+          await args.denops.cmd(`${openCommand} ${action.path}`);
+        }
+        // move the cursor
+        await fn.cursor(args.denops, mark.pos[1], mark.pos[2]);
+      }
+      return ActionFlags.None;
+    },
     // 通常の'aのようなjumpを行う
     jump: async (
       args: { denops: Denops; items: DduItem[] },
