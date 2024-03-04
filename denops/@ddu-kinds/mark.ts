@@ -1,8 +1,12 @@
-import { BaseKind } from "https://deno.land/x/ddu_vim@v3.10.2/base/kind.ts";
+import {
+  BaseKind,
+  GetPreviewerArguments,
+} from "https://deno.land/x/ddu_vim@v3.10.2/base/kind.ts";
 import { Denops, fn } from "https://deno.land/x/ddu_vim@v3.10.2/deps.ts";
 import {
   ActionFlags,
   DduItem,
+  Previewer,
 } from "https://deno.land/x/ddu_vim@v3.10.2/types.ts";
 
 export type ActionData = {
@@ -76,5 +80,10 @@ export class Kind extends BaseKind<Params> {
   };
   override params(): Params {
     return {};
+  }
+  override getPreviewer(
+    {}: GetPreviewerArguments,
+  ): Promise<Previewer | undefined> {
+    return Promise.resolve(undefined);
   }
 }
