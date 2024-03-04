@@ -11,6 +11,7 @@ import {
 } from "https://deno.land/x/ddu_vim@v3.10.2/types.ts";
 
 export type ActionData = {
+  winid?: number;
   bufNr?: number;
   col?: number;
   lineNr?: number;
@@ -62,7 +63,19 @@ export class Kind extends BaseKind<Params> {
     // 該当するバッファと紐づくウィンドウへ移動して、カーソルを移動する
     // 該当ウィンドウが複数ある場合はpushして、ウィンドウソースっぽくしてもよいかも
     // ウィンドウに移動した後に、jumpと同じ要領で移動する
-    goto: (): ActionFlags => ActionFlags.None,
+    goto: async (
+      args: { denops: Denops; items: DduItem[] },
+    ): Promise<ActionFlags> => {
+      for (const item of args.items) {
+        const action = item.action as ActionData;
+        const mark = item.data as fn.MarkInformation;
+        if (action.winid) {
+          await fn.win_gotoid(args.denops, action.winid);
+        }
+        await args.denops.cmd("normal! " + mark.mark);
+      }
+      return ActionFlags.None;
+    },
     delete: async (
       args: { denops: Denops; items: DduItem[] },
     ): Promise<ActionFlags> => {
