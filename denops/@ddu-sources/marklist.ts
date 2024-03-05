@@ -23,13 +23,22 @@ export class Source extends BaseSource<Params> {
         );
         for (const mark of marklist) {
           const path = mark.file ?? await fn.bufname(args.denops, mark.pos[0]);
+          let line = "";
+          if (mark.pos[0] !== 0) {
+            const lines = await fn.getbufline(
+              args.denops,
+              mark.pos[0],
+              mark.pos[1],
+            );
+            line = lines.length > 0 ? lines[0] : "";
+          }
           // ddu-kind-file 0 is special.
           // if bufnum is 0, we use path only.
           // in setpos({expr}, {list}), if bufnum is 0, it means the current buffer
           // in getpos({expr}), if bufnum is 0, it means there is no buffer related to the position
           items.push({
             word: mark.mark + " " + path + ":" + mark.pos[1] + ":" +
-              mark.pos[2],
+              mark.pos[2] + " " + line,
             action: {
               markInfo: mark,
               winid: args.sourceParams.winid,
