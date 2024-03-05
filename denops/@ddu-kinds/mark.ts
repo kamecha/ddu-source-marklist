@@ -58,7 +58,7 @@ export class Kind extends BaseKind<Params> {
         const action = item.action as ActionData;
         const mark = action.markInfo;
         // TODO: setpos(), cursor(), normal!のどれがいいのか調査しとく
-        if (mark.pos[0] < 0) {
+        if (mark.pos[0] <= 0) {
           // 'A : 大文字マーク
           // '0 : 番号マーク
           // ↑のうちバッファが無いもの
