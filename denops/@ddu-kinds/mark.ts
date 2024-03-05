@@ -6,6 +6,7 @@ import { Denops, fn } from "https://deno.land/x/ddu_vim@v3.10.2/deps.ts";
 import {
   ActionFlags,
   BufferPreviewer,
+  Context,
   DduItem,
   Previewer,
 } from "https://deno.land/x/ddu_vim@v3.10.2/types.ts";
@@ -50,13 +51,27 @@ export class Kind extends BaseKind<Params> {
     },
     // 通常の'aのようなjumpを行う
     jump: async (
-      args: { denops: Denops; items: DduItem[] },
+      args: { denops: Denops; context: Context; items: DduItem[] },
     ): Promise<ActionFlags> => {
       for (const item of args.items) {
         const mark = item.data as fn.MarkInformation;
         // TODO: setpos(), cursor(), normal!のどれがいいのか調査しとく
-        // await fn.setpos(args.denops, ".", mark.pos);
-        await args.denops.cmd("normal! " + mark.mark);
+        if (mark.pos[0] < 0) {
+          // 'A : 大文字マーク
+          // '0 : 番号マーク
+          // ↑のうちバッファが無いもの
+          await args.denops.cmd("normal! " + mark.mark);
+        } else {
+          // 'a : 小文字マーク
+          // 'A : 大文字マーク
+          // '0 : 番号マーク
+          // ↑のうちバッファが有るもの
+          if (mark.pos[0] !== args.context.bufNr) {
+            await args.denops.cmd(`buffer ${mark.pos[0]}`);
+          }
+          // setpos()君カーソルを移動させる時はバッファ番号を無視するらしい:awoo:
+          await fn.setpos(args.denops, ".", mark.pos);
+        }
       }
       return ActionFlags.None;
     },
