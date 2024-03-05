@@ -31,6 +31,7 @@ export class Source extends BaseSource<Params> {
             word: mark.mark + " " + path + ":" + mark.pos[1] + ":" +
               mark.pos[2],
             action: {
+              markInfo: mark,
               winid: args.sourceParams.winid,
               bufNr: mark.pos[0] === 0 ? -1 : mark.pos[0],
               col: mark.pos[2],

@@ -12,6 +12,7 @@ import {
 } from "https://deno.land/x/ddu_vim@v3.10.2/types.ts";
 
 export type ActionData = {
+  markInfo: fn.MarkInformation;
   winid?: number;
   bufNr?: number;
   col?: number;
@@ -32,7 +33,7 @@ export class Kind extends BaseKind<Params> {
       for (const item of args.items) {
         const action = item.action as ActionData;
         const bufNr = action.bufNr ?? -1;
-        const mark = item.data as fn.MarkInformation;
+        const mark = action.markInfo;
         // open the buffer
         if (bufNr > 0) {
           const isLoaded = await fn.bufloaded(args.denops, bufNr);
@@ -54,7 +55,8 @@ export class Kind extends BaseKind<Params> {
       args: { denops: Denops; context: Context; items: DduItem[] },
     ): Promise<ActionFlags> => {
       for (const item of args.items) {
-        const mark = item.data as fn.MarkInformation;
+        const action = item.action as ActionData;
+        const mark = action.markInfo;
         // TODO: setpos(), cursor(), normal!のどれがいいのか調査しとく
         if (mark.pos[0] < 0) {
           // 'A : 大文字マーク
@@ -83,7 +85,7 @@ export class Kind extends BaseKind<Params> {
     ): Promise<ActionFlags> => {
       for (const item of args.items) {
         const action = item.action as ActionData;
-        const mark = item.data as fn.MarkInformation;
+        const mark = action.markInfo;
         if (action.winid) {
           await fn.win_gotoid(args.denops, action.winid);
         }
@@ -95,7 +97,8 @@ export class Kind extends BaseKind<Params> {
       args: { denops: Denops; items: DduItem[] },
     ): Promise<ActionFlags> => {
       for (const item of args.items) {
-        const mark = item.data as fn.MarkInformation;
+        const action = item.action as ActionData;
+        const mark = action.markInfo;
         const pos: fn.Position = [
           mark.pos[0],
           0, // if lnum is 0, delete the mark
